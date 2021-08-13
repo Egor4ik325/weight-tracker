@@ -1,0 +1,8 @@
+{% extends "tracker/base.html" %}
+
+{% block header %}
+Welcome to the weight tracker!
+{% endblock %}
+{% block content %}
+Weight tracker will help you to track your body weight and eaten food. Just add some <a href="{% url 'tracker:food' %}">food</a> to the table and click <a href="{% url 'tracker:track' %}">track</a> and start tracking right now.
+{% endblock %}

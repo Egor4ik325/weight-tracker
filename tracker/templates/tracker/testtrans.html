@@ -1,0 +1,11 @@
+{% extends "tracker/base.html" %}
+{% load i18n %}
+
+{% block header %}
+Welcome to the internationalization tester!
+{% endblock %}
+{% block content %}
+  <p>{% trans "Life is life." %}</p>
+  {% get_current_language as LANGUAGE_CODE %}
+  <p>LANGUAGE_CODE: {{ LANGUAGE_CODE }}</p>
+{% endblock %}

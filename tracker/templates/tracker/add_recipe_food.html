@@ -1,0 +1,22 @@
+{% extends "tracker/base.html" %}
+
+{% block header %}
+  Add food to the recipe
+{% endblock %}
+
+{% block content %}
+
+{{ recipe_id }}
+
+<form action="{% url 'tracker:add_recipe_food' recipe_id %}" method="POST">
+  {% csrf_token %}
+
+  {{ product_form }}
+
+  <button type="submit">Add food</button>
+  <!-- <input type="submit" value="Add food"> -->
+</form>
+
+<p><a href="{% url 'tracker:food' %}">Quit</a></p>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "tracker/base.html" %}
+
+{% block header %}
+Your food:
+{% endblock %}
+
+{% block content %}
+
+<h2>Created food table:</h2>
+
+<table>
+  {# Header #}
+  <tr>
+    <th>Food<br><a href="#">sort</a></th>
+    <th>Calories/100g<br><a href="#">sort</a></th>
+    <!-- <th></th> -->
+  </tr>
+  {# Food #}
+  {% for recipe in recipes %}
+    <tr>
+      <td>{{ recipe.name }}</td>
+      <td style="text-align: center;">{{ recipe.calories|floatformat }}</td>
+      <td><a href="{% url 'tracker:edit_food' recipe.id %}">edit</a> | delete</td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="3">
+        No food created
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+
+<p><a href="{% url 'tracker:add_food' %}">Add food</a></p>
+<p><a href="{% url 'tracker:add_recipe' %}">Add recipe</a> (collection of food) </p>
+
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "tracker/base.html" %}
+
+{% block header %}
+  Recipe product list:
+{% endblock header %}
+
+{% block content %}
+  {% for p in products %}
+    <p>{{ p }}</p>
+  {% endfor %}
+
+  <p><a href="{% url 'tracker:add_product' recipe_pk %}">
+    Add product to the recipe</a></p>
+
+{% endblock content %}

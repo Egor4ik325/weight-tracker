@@ -1,0 +1,34 @@
+{% extends "tracker/base.html" %}
+
+{% block header %}
+Edit recipe
+{% endblock %}
+
+{% block content %}
+
+
+<form action="{% url 'tracker:edit_food' recipe_id %}" method="POST">
+  {% csrf_token %}
+
+  {# Recipe form #}
+  {{ recipe_form.as_p }}
+
+  <h3>Food containing in recipe:</h3>
+
+  {# Set of product forms. #}
+  {% comment %}
+  {% for product_form in product_forms %}
+    {{ product_form }}<br>
+  {% empty %}
+    No food in recipe
+  {% endfor %}
+  {%endcomment%}
+
+  {{ product_formset.as_p }}
+  
+  <input type="submit" value="Save changes"> <br>
+</form>
+
+<p><a href="{% url 'tracker:add_recipe_food' recipe_id %}">Add food</a> to the recipe.</p>
+
+{% endblock %}

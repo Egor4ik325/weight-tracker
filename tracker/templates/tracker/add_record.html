@@ -1,0 +1,17 @@
+{% extends "tracker/base.html" %}
+
+{% block header %}
+Add new record
+{% endblock %}
+
+{% block content %}
+
+<form action="{% url 'tracker:add_record' section %}" method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button name="Submit">
+    Add record
+  </button>
+</form>
+
+{% endblock %}

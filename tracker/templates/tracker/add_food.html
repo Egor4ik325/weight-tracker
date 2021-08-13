@@ -1,0 +1,17 @@
+{% extends "tracker/base.html" %}
+
+{% block header %}
+Add food
+{% endblock %}
+
+{% block content %}
+
+<form action="{% url 'tracker:add_food' %}" method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button name="Submit">
+    Add food
+  </button>
+</form>
+
+{% endblock %}

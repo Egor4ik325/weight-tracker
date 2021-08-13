@@ -1,0 +1,50 @@
+{% extends "tracker/base.html" %}
+
+{% block header %}
+  Create recipe
+{% endblock %}
+
+{% block content %}
+
+  <form id="form-container" method="POST">
+    {% csrf_token %}
+
+    {# Recipe name/desc #}
+    {{ recipe_form.as_p }}
+
+    {# Recipe added products #}
+    {{ product_formset.management_form }}
+    {% for product_form in product_formset %}
+      <div class="product-form">
+        {{ product_form }}
+      </div>
+    {% endfor %}
+
+    <button id="add-form" type="button">Add another form</button>
+    <button type="submit">Add products</button>
+
+  </form>
+  
+  <script>
+    // Dynamic form adding
+    let productForms = document.querySelectorAll(".product-form")
+    let container = document.querySelector("#form-container")
+    let addButton = document.querySelector("#add-form")
+    let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+    let maxForms = document.querySelector("#id_form-MAX_NUM_FORMS")
+    let formNum = productForms.length - 1
+
+    addButton.addEventListener('click', addForm)
+    function addForm(e) {
+      e.preventDefault()
+
+      formNum++
+      let newForm = productForms[0].cloneNode(true)
+      newForm.innerHTML = newForm.innerHTML.replace(RegExp(`form-(\\d){1}-`, 'g'), `form-${formNum}`)
+
+      container.insertBefore(newForm, addButton)
+      totalForms.setAttribute('value', `${formNum+1}`)
+    }
+  </script>
+
+{% endblock %}
