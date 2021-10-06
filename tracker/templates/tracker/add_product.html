@@ -1,4 +1,5 @@
 {% extends "tracker/base.html" %}
+{% load crispy_forms_tags %}
 
 {% block header %}
   Add products to recipe;
@@ -10,13 +11,12 @@
     {{ product_formset.managment_form }}
     {% for form in product_formset %}
       <div class="product-form">
-        {{ form }}
+        {{ form|crispy }}
       </div>
     {% endfor %}
 
-    <button id="add-form" type="button">Add another form</button>
-
-    <button type="submit">Add products</button>
+    <button class="btn" id="add-form" type="button">Add another form</button>
+    <button class="btn btn-primary" type="submit">Add products</button>
   </form>
 
   <script>
@@ -43,7 +43,6 @@
 
     // Listen to add form button click
     addButton.addEventListener('click', addForm)
-
   </script>
 
 {% endblock content %}

@@ -1,16 +1,16 @@
 {% extends "tracker/base.html" %}
+{% load crispy_forms_tags %}
 
 {% block header %}
-Edit food object
+  Edit food object
 {% endblock header %}
 
 {% block content %}
 
 <form action="{% url 'tracker:edit_food' food_id %}" method="POST">
   {% csrf_token %}
-  {{ form.as_p }}
-
-  <button type="submit" name="submit">Save changes</button>
+  {{ form|crispy }}
+  <button class="btn" type="submit" name="submit">Save changes</button>
 </form>
 
 {% endblock %}

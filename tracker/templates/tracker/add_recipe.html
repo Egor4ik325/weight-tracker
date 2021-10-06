@@ -1,4 +1,5 @@
 {% extends "tracker/base.html" %}
+{% load crispy_forms_tags %}
 
 {% block header %}
   Create recipe
@@ -10,19 +11,18 @@
     {% csrf_token %}
 
     {# Recipe name/desc #}
-    {{ recipe_form.as_p }}
+    {{ recipe_form|crispy }}
 
     {# Recipe added products #}
     {{ product_formset.management_form }}
     {% for product_form in product_formset %}
       <div class="product-form">
-        {{ product_form }}
+        {{ product_form|crispy }}
       </div>
     {% endfor %}
 
     <button id="add-form" type="button">Add another form</button>
-    <button type="submit">Add products</button>
-
+    <button class="btn btn-primary" type="submit">Add products</button>
   </form>
   
   <script>

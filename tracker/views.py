@@ -8,27 +8,7 @@ from pprint import pprint
 
 from .models import Food, Product, Recipe, Record
 from .forms import FoodForm, RecipeForm, ProductForm, RecordForm
-
-
-# class based generic views
-from django.views.generic import ListView, TemplateView
 from .forms import ProductFormSet
-
-#
-# Strategy:
-# 1. "learn" new stuff (introduce yourself)
-#   - as much NEW as you can
-#   - learning until you feel lack of ACTUALLY WRITING CODE/using it
-# 2. use old stuff in your projects
-#   - use/code/write as much as you can
-#   - do UNTIL you feel lack of knowledge, skills, information
-#
-# JUST learn "How to ...?" and then use it in your project
-# just 1 Google search - LEVEL UP
-# 
-# learn new Django features after being good at working
-# with old ones. (apply to the old code)
-#
 
 
 # def view_recipe(request, recipe_pk):
@@ -37,40 +17,6 @@ from .forms import ProductFormSet
 #     context = {'products': prods, 'recipe_pk': recipe_pk}
 #     return render(request, 'tracker/view_recipe.html', context)
 
-
-# class ProductListView(ListView):
-#     # model = Product
-#     template_name = "tracker/view_recipe.html"
-#     context_object_name = "products"
-
-#     def get_queryset(self):
-#         recipe_pk = self.kwargs['recipe_pk']
-#         r = Recipe.objects.get(pk=recipe_pk)
-#         queryset = r.belong_recipe.all()
-#         return queryset
-
-#     def get_context_data(self, *args, **kwargs):
-#         context = super().get_context_data(*args, **kwargs)
-#         context['recipe_pk'] = self.recipe_pk
-#         return context
-
-# class ProductAddView(TemplateView):
-#     template_name = "tracker/add_product.html"
-
-#     def get(self, *args, **kwargs):
-#         ''' Method handle GET request. '''
-#         formset = ProductFormSet(queryset=Product.objects.none())
-#         return self.render_to_response({'bird_formset': formset})
-
-#     def post(self, *args, **kwargs):
-#         ''' Method handle POST HTTP request. '''
-#         formset = ProductFormSet(data=self.request.POST)
-
-#         if formset.is_valid():
-#             formset.save()
-#             return redirect(reverse_lazy('tracker:food'))
-#         else:
-#             return self.render_to_response({'bird_formset': formset})
 
 def add_product(request, recipe_pk):
     if request.method == 'GET':

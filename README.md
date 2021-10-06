@@ -5,4 +5,7 @@
 ![Track page screenshot](screenshot.png)
 ![Database schema screenshot](schema.png)
 
-This app was created for my mom.
+## Features
+
+- [x] Clean up code + style app & forms
+- [ ] ...

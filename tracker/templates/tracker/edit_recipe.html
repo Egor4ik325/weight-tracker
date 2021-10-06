@@ -1,4 +1,5 @@
 {% extends "tracker/base.html" %}
+{% load crispy_forms_tags %}
 
 {% block header %}
 Edit recipe
@@ -11,7 +12,7 @@ Edit recipe
   {% csrf_token %}
 
   {# Recipe form #}
-  {{ recipe_form.as_p }}
+  {{ recipe_form|crispy }}
 
   <h3>Food containing in recipe:</h3>
 
@@ -24,9 +25,9 @@ Edit recipe
   {% endfor %}
   {%endcomment%}
 
-  {{ product_formset.as_p }}
+  {{ product_formset|crispy }}
   
-  <input type="submit" value="Save changes"> <br>
+  <input class="btn btn-primary" type="submit" value="Save changes"> <br>
 </form>
 
 <p><a href="{% url 'tracker:add_recipe_food' recipe_id %}">Add food</a> to the recipe.</p>

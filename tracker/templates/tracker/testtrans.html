@@ -2,8 +2,9 @@
 {% load i18n %}
 
 {% block header %}
-Welcome to the internationalization tester!
+  Welcome to the internationalization tester!
 {% endblock %}
+
 {% block content %}
   <p>{% trans "Life is life." %}</p>
   {% get_current_language as LANGUAGE_CODE %}

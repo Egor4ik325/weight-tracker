@@ -1,4 +1,5 @@
 {% extends "tracker/base.html" %}
+{% load crispy_forms_tags %}
 
 {% block header %}
 Add food
@@ -8,10 +9,8 @@ Add food
 
 <form action="{% url 'tracker:add_food' %}" method="POST">
   {% csrf_token %}
-  {{ form.as_p }}
-  <button name="Submit">
-    Add food
-  </button>
+  {{ form|crispy }}
+  <button class="btn btn-primary" name="Submit">Add food</button>
 </form>
 
 {% endblock %}
