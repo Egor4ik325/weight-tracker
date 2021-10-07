@@ -5,16 +5,19 @@ app_name = 'tracker'
 urlpatterns = [
     # Home url
     path('', views.HomeView.as_view(), name='home'),
+
     # Food urls
     path('food/', views.food, name='food'),
     path('add_food/', views.add_food, name='add_food'),
     path('edit_food/<int:food_id>/', views.edit_food, name='edit_food'),
     path('add_recipe/', views.add_recipe, name='add_recipe'),
-    path('add_recipe_food/<int:recipe_id>/', views.add_recipe_food, name='add_recipe_food'),
+    path('edit_recipe/<int:food_id>/', views.edit_recipe, name="edit_recipe"),
+
     # Track urls
     path('track/', views.track, name='track'),
     path('track/<date>/', views.track, name='track_date'),
     path('add_record/<int:section>/', views.add_record, name='add_record'),
+
     # Test urls
     path('testtrans/', views.TestTransView.as_view(), name='testtrans'),
 

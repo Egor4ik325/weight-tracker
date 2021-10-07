@@ -2,13 +2,6 @@ from django import forms
 from .models import Food, Recipe, Product, Record
 
 
-
-
-ProductFormSet = forms.modelformset_factory(
-    Product, fields=['have_recipe', 'weight'], extra=1
-)
-
-
 class FoodForm(forms.ModelForm):
     class Meta:
         model = Food
@@ -17,6 +10,7 @@ class FoodForm(forms.ModelForm):
             'name': 'Food name',
             'calories': 'Food calories (per 100 gram)',
         }
+
 
 class RecipeForm(forms.ModelForm):
     class Meta:
@@ -59,3 +53,11 @@ class RecordForm(forms.ModelForm):
             'recipe': 'Food eaten',
             'weight': 'Eaten food weight',
         }
+
+ProductFormSet = forms.modelformset_factory(
+    Product, fields=['have_recipe', 'weight'], extra=1
+)
+
+InlineProductFormSet = forms.inlineformset_factory(
+    Recipe, Product, fields=['have_recipe', 'weight'], fk_name='recipe'
+)

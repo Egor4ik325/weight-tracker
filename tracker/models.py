@@ -24,6 +24,10 @@ class Food(models.Model):
     # calories per 100 gram
     calories = models.FloatField(verbose_name=_("Food calories in 100 gram"))
 
+    class Meta:
+        verbose_name = _("Food")
+        verbose_name_plural = _("Food")
+
     def __str__(self):
         return self.name
 

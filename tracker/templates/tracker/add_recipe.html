@@ -13,8 +13,10 @@
     {# Recipe name/desc #}
     {{ recipe_form|crispy }}
 
-    {# Recipe added products #}
+    {# Managment form, provides hidden info fields (total, max, min, ...) #}
     {{ product_formset.management_form }}
+
+    {# Recipe added products #}
     {% for product_form in product_formset %}
       <div class="product-form">
         {{ product_form|crispy }}
@@ -40,7 +42,7 @@
 
       formNum++
       let newForm = productForms[0].cloneNode(true)
-      newForm.innerHTML = newForm.innerHTML.replace(RegExp(`form-(\\d){1}-`, 'g'), `form-${formNum}`)
+      newForm.innerHTML = newForm.innerHTML.replace(RegExp(`form-(\\d){1}-`, 'g'), `form-${formNum}-`)
 
       container.insertBefore(newForm, addButton)
       totalForms.setAttribute('value', `${formNum+1}`)

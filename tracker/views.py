@@ -2,20 +2,15 @@ from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView
 from django.forms import formset_factory, modelformset_factory
+from django.http.response import HttpResponseBadRequest
+from django.shortcuts import get_object_or_404
 import datetime
 
 from pprint import pprint
 
 from .models import Food, Product, Recipe, Record
 from .forms import FoodForm, RecipeForm, ProductForm, RecordForm
-from .forms import ProductFormSet
-
-
-# def view_recipe(request, recipe_pk):
-#     r = Recipe.objects.get(pk=recipe_pk)
-#     prods = r.belong_recipe.all()
-#     context = {'products': prods, 'recipe_pk': recipe_pk}
-#     return render(request, 'tracker/view_recipe.html', context)
+from .forms import ProductFormSet, InlineProductFormSet
 
 
 def add_product(request, recipe_pk):
@@ -32,8 +27,6 @@ def add_product(request, recipe_pk):
             return render(request, 'tracker/add_product.html', {'product_formset': formset, 'recipe_pk':recipe_pk})
     else:
         pass
-
-# Create your views here.
 
 class TestTransView(TemplateView):
     template_name = "tracker/testtrans.html"
@@ -59,11 +52,11 @@ def add_food(request):
     elif request.method == 'POST':
         form = FoodForm(data=request.POST)
         if form.is_valid():
-            # Create food
+            # Because user will be choosing eaten food from recipes objects
+            # we need to create a basic product and recipe objects together
+            # with food object so that it can choose them.
             f = form.save()
-            # Create recipe
             r = Recipe.objects.create(name=f.name)
-            # Create product
             p = Product.objects.create(have_food=f, recipe=r)
             return redirect('tracker:food')
         else:
@@ -81,50 +74,25 @@ def add_recipe(request):
         return render(request, 'tracker/add_recipe.html', context)
     elif request.method == 'POST':
         recipe_form = RecipeForm(data=request.POST)
-        # product_formset = ProductFormSet(data=request.POST)
-        #and product_formset.is_valid()
+        product_formset = ProductFormSet(data=request.POST)
+
+        # Is recipe form is valid (recipe name and description)
         if recipe_form.is_valid():
-            created_recipe = recipe_form.save()
-            return redirect(reverse('tracker:add_recipe_food', args=[created_recipe.id]))
+            # Is recipe attached products are selected valid
+            if product_formset.is_valid():
+                recipe_created = recipe_form.save()
+
+                for form in product_formset.forms:
+                    # Bind all created products to the form
+                    product = form.save(commit=False)
+                    product.recipe = recipe_created
+                    product.save()
+
+                return redirect(reverse('tracker:food'))
+            else:
+                return HttpResponseBadRequest("Invalid product forms!")
         else:
-            context = {'recipe_form': recipe_form}
-            return render(request, 'tracker/add_recipe.html', context)
-    else:
-        raise Exception("Undefined HTTP request method.")
-
-def add_recipe_food(request, recipe_id):
-    if request.method == 'GET':
-        # Create ProductForm with parent recipe
-        # r = Recipe.objects.get(pk=recipe_id)
-        # initial={'recipe': recipe_id}
-        product_form = ProductForm()
-        product_form.fields['have_recipe'].choices = [(r, str(r))
-                                                      for r in Recipe.objects.exclude(pk=recipe_id)]
-        # product_form = ProductForm()
-
-        # product_form.fields['have_recipe'].choices = [
-        #     (p, str(p)) for p in Recipe.objects.exclude(pk=recipe_id)
-        # ]
-
-        context = {'product_form': product_form, 'recipe_id': recipe_id}
-        return render(request, 'tracker/add_recipe_food.html', context)
-    elif request.method == 'POST':
-        product_form = ProductForm(data=request.POST)
-        product_form.fields['have_recipe'].choices = [(r, str(r))
-                                                      for r in Recipe.objects.exclude(pk=recipe_id)]
-        if product_form.is_valid():
-            # product_form.save()
-            created_product = product_form.save(commit=False)
-            r = Recipe.objects.get(pk=recipe_id)
-            # set product parent
-            created_product.recipe = r
-            created_product.save()
-            return redirect(reverse('tracker:add_recipe_food', args=[recipe_id]))
-        else:
-            context = {'product_form': product_form, 'recipe_id': recipe_id}
-            return render(request, 'tracker/add_recipe_food.html', context)
-    else:
-        raise Exception("Undefined HTTP request method.")
+            return HttpResponseBadRequest("Invalid recipe form!")
 
 def edit_food(request, food_id):
     r = Recipe.objects.get(pk=food_id)
@@ -151,62 +119,32 @@ def edit_food(request, food_id):
         return edit_recipe(request, food_id)
 
 def edit_recipe(request, food_id):
-    r = Recipe.objects.get(pk=food_id)
-    prods = r.belong_recipe.all()
-    # ProductFormSet = modelformset_factory(Product, fields=['have_recipe', 'weight'], extra=0)
-
-    if request.method == 'GET':
-        recipe_form = RecipeForm(instance=r)
-
-        product_formset = ProductFormSet(queryset=prods)
-        # ProductFormSet = formset_factory(ProductForm)
-        # product_formset = ProductFormSet()
-
-        # product_forms = [ProductForm(instance=p) for p in prods]
-        # context = {'recipe_form': recipe_form, 'product_forms': product_forms, 'recipe_id': food_id}
-        context = {'recipe_form': recipe_form, 'product_formset': product_formset, 'recipe_id': food_id}
-        return render(request, 'tracker/edit_recipe.html', context)
-    elif request.method == 'POST':
-        pprint(request.POST)
-        recipe_form = RecipeForm(data=request.POST, instance=r)
-        product_formset = ProductFormSet(request.POST, queryset=prods)
-        # product_forms = [ProductForm(data=request.POST, instance=p) for p in prods]
-        # if recipe_form.is_valid() and all([pf.is_valid() for pf in product_forms]):
-        if recipe_form.is_valid() and product_formset.is_valid():
-            # Save changes to all objects/forms
-            recipe_form.save()
-            product_formset.save()
-            # for i in range(len(product_forms)):
-            #     product_forms[i].save()
-            return redirect('tracker:food')
+    """Patch given recipe with the given request POST data."""
+    # Handle changes
+    if request.method == "POST":
+        recipe = get_object_or_404(Recipe, pk=food_id)
+        recipe_form = RecipeForm(data=request.POST, instance=recipe)
+        product_formset = InlineProductFormSet(data=request.POST, instance=recipe)
+        if recipe_form.is_valid():
+            if product_formset.is_valid():
+                recipe_form.save()
+                product_formset.save()
+                return redirect(reverse('tracker:food'))
+            else:
+                return HttpResponseBadRequest("Invalid product formset data.")
         else:
-            context = {'recipe_form': recipe_form, 'product_formset': product_formset, 'recipe_id': food_id}
-            return render(request, 'tracker/edit_recipe.html', context)
-    else:
-        raise Exception("Undefined HTTP request method.")
+            return HttpResponseBadRequest("Invalid recipe form data.")
 
-# def edit_food(request, food_id):
-#     recipe = Recipe.objects.get(pk=food_id)
-#     if len(recipe.belong_recipe.all()) == 1:
-#         # The recipe is a food (discrete/primitive)
-#         food = recipe.belong_recipe.all()[0].food
-#         if request.method == 'GET':
-#             form = FoodForm(food)
-#             context = {'form': form, 'food_id': food_id}
-#             return render(request, 'tracker/edit_food.html', context)
-#         elif request.method == 'POST':
-#             form = FoodForm(request.POST)
-#             if form.is_valid():
-#                 form.save()
-#                 return redirect('tracker:food')
-#             else:
-#                 context = {'form': form}
-#                 return render(request, 'tracker/edit_food.html', context)
-#         else:
-#             raise Exception("Undefined HTTP request method.")
-#     else:
-#         # The recipe is a food (complex)
-#         pass
+    # Render form
+    recipe = get_object_or_404(Recipe, pk=food_id)
+    recipe_form = RecipeForm(instance=recipe)
+    product_formset = ProductFormSet(queryset=recipe.belong_recipe.all())
+    context = {
+        'recipe_form': recipe_form,
+        'product_formset': product_formset,
+        'food_id': food_id,
+    }
+    return render(request, 'tracker/edit_recipe.html', context)
 
 def track(request, date = None):
     # Redirect to the same URL with current date
@@ -230,10 +168,6 @@ def track(request, date = None):
                'track_date': date}
     return render(request, 'tracker/track.html', context)
 
-# def track(request):
-#     # current time
-#     return track(request, datetime.datetime.now() + datetime.timedelta(hours=3))
-
 def add_record(request, section):
     if request.method == 'GET':
         form = RecordForm()
@@ -251,3 +185,9 @@ def add_record(request, section):
             return render(request, 'tracker/add_record.html', context)
     else:
         raise Exception("Undefined HTTP request method.")
+
+# def view_recipe(request, recipe_pk):
+#     r = Recipe.objects.get(pk=recipe_pk)
+#     prods = r.belong_recipe.all()
+#     context = {'products': prods, 'recipe_pk': recipe_pk}
+#     return render(request, 'tracker/view_recipe.html', context)

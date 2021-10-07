@@ -6,7 +6,7 @@
 Yesterday - Tommorow
   {% for name, total, records, n in sections %}
     <h2>{{ name|capfirst }}</h2>
-    <ul>
+    <ul class="bm-2">
       {% for record in records %}
         <li>
           <b>{{ record|capfirst }}</b>, {{ record.weight|floatformat }} gram<br>
@@ -15,7 +15,7 @@ Yesterday - Tommorow
       {% empty %}
         You have no record.
       {% endfor %}
-      <p><a href="{% url 'tracker:add_record' n %}">Add record &raquo;</a></p>
+      <p><a class="btn btn-outline-secondary mt-2" href="{% url 'tracker:add_record' n %}">Add record</a></p>
     </ul>
     {% if total > 1 %}
       <p><b>Section total</b>: {{ total|floatformat }} calories</p>

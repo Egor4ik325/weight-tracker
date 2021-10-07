@@ -8,28 +8,25 @@ Edit recipe
 {% block content %}
 
 
-<form action="{% url 'tracker:edit_food' recipe_id %}" method="POST">
+<form action="{% url 'tracker:edit_recipe' food_id %}" method="POST">
   {% csrf_token %}
 
-  {# Recipe form #}
   {{ recipe_form|crispy }}
 
   <h3>Food containing in recipe:</h3>
 
-  {# Set of product forms. #}
-  {% comment %}
-  {% for product_form in product_forms %}
-    {{ product_form }}<br>
+  {{ product_formset.management_form }}
+  {% for product_form in product_formset %}
+    <div class="mb-4">
+      {{ product_form|crispy }}
+    </div>
   {% empty %}
-    No food in recipe
+    No products in the recipe.
   {% endfor %}
-  {%endcomment%}
 
-  {{ product_formset|crispy }}
-  
   <input class="btn btn-primary" type="submit" value="Save changes"> <br>
 </form>
 
-<p><a href="{% url 'tracker:add_recipe_food' recipe_id %}">Add food</a> to the recipe.</p>
+{% comment %} <p><a href="{% url 'tracker:add_recipe_food' recipe_id %}">Add food</a> to the recipe.</p> {% endcomment %}
 
 {% endblock %}
