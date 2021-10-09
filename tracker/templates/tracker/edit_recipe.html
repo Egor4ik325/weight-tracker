@@ -21,7 +21,7 @@ Edit recipe
       {{ product_form|crispy }}
     </div>
   {% empty %}
-    No products in the recipe.
+    <p>No products in the recipe.</p>
   {% endfor %}
 
   <input class="btn btn-primary" type="submit" value="Save changes"> <br>

@@ -53,12 +53,12 @@ class Recipe(models.Model):
 class Product(models.Model):
     """ Some real food (have weight) that is bind to simple/complex
     (from one or multiple products) recipe. """
-    have_food = models.ForeignKey(Food, on_delete=models.RESTRICT, null=True, blank=True)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='belong_recipe') # child_recipes
 
     # can't specify all recipe choices without recipe parent
+    have_food = models.ForeignKey(Food, on_delete=models.RESTRICT, null=True, blank=True)
     have_recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True, blank=True, related_name='have_recipe') # parent_recipes
     weight = models.FloatField(default=100)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='belong_recipe') # child_recipes
 
     def __str__(self):
         if self.have_food is None:
@@ -66,9 +66,9 @@ class Product(models.Model):
                 # shouldn't be but could
                 return None
             else:
-                return str(self.have_recipe)
+                return f"{self.recipe} - {self.have_recipe}"
         else:
-            return str(self.have_food)
+            return f"{self.recipe} - {self.have_food}"
 
     @property
     def total(self):

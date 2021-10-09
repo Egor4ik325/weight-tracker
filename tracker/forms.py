@@ -59,5 +59,5 @@ ProductFormSet = forms.modelformset_factory(
 )
 
 InlineProductFormSet = forms.inlineformset_factory(
-    Recipe, Product, fields=['have_recipe', 'weight'], fk_name='recipe'
+    Recipe, Product, fields=['have_recipe', 'weight'], fk_name='recipe', extra=0
 )

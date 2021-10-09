@@ -1,16 +1,15 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse, reverse_lazy
-from django.views.generic import TemplateView
-from django.forms import formset_factory, modelformset_factory
-from django.http.response import HttpResponseBadRequest
-from django.shortcuts import get_object_or_404
 import datetime
-
 from pprint import pprint
 
+from django.forms import formset_factory, modelformset_factory
+from django.http.response import HttpResponseBadRequest
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import TemplateView
+
+from .forms import (FoodForm, InlineProductFormSet, ProductForm,
+                    ProductFormSet, RecipeForm, RecordForm)
 from .models import Food, Product, Recipe, Record
-from .forms import FoodForm, RecipeForm, ProductForm, RecordForm
-from .forms import ProductFormSet, InlineProductFormSet
 
 
 def add_product(request, recipe_pk):
@@ -138,7 +137,7 @@ def edit_recipe(request, food_id):
     # Render form
     recipe = get_object_or_404(Recipe, pk=food_id)
     recipe_form = RecipeForm(instance=recipe)
-    product_formset = ProductFormSet(queryset=recipe.belong_recipe.all())
+    product_formset = InlineProductFormSet(instance=recipe)
     context = {
         'recipe_form': recipe_form,
         'product_formset': product_formset,
