@@ -16,10 +16,25 @@
 
 Models:
 
-1. Food - abstract food. Food object always has a alias recipe (for choosing).
-2. Recipe - combination of products.
-3. Product - food or recipe with weight. Product is always bind to some recipe.
+- Food - abstract food
+- Product - connects recipe to (of) food/recipe (adds real weight)
+- Recipe - combination of products
+- Record - eaten recipe with timestamp
 
 ## API
 
-- `/edit/` - edit recipe (which is food or recipe).
+- create, list, update, delete food
+
+- create, list, update, delete records (`/track/`)
+
+## Automated Testing
+
+Automanted e2e testing with Selenium for Firefox.
+
+- Templates (HTML forms)
+
+- Views (API)
+
+- Forms (validation)
+
+- Models (database)

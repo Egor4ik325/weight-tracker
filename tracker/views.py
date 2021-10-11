@@ -149,7 +149,7 @@ def track(request, date = None):
     # Redirect to the same URL with current date
     if date is None:
         cur_date = datetime.datetime.now() + datetime.timedelta(hours=3)
-        return redirect('/track/' + str(cur_date.date()))
+        return redirect(f'/track/{cur_date.date()}/')
 
     # Convert date string to date object
     date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
