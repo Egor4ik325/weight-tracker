@@ -6,8 +6,6 @@ Your food:
 
 {% block content %}
 
-<h2>Created food table:</h2>
-
 <table>
   {# Header #}
   <tr>
@@ -18,7 +16,7 @@ Your food:
   {# Food #}
   {% for recipe in recipes %}
     <tr>
-      <td>{{ recipe.name }}</td>
+      <td>{{ recipe }}</td>
       <td style="text-align: center;">{{ recipe.calories|floatformat }}</td>
       <td><a href="{% url 'tracker:edit_food' recipe.id %}">edit</a> | delete</td>
     </tr>
@@ -31,7 +29,9 @@ Your food:
   {% endfor %}
 </table>
 
-<p><a href="{% url 'tracker:add_food' %}">Add food</a></p>
-<p><a href="{% url 'tracker:add_recipe' %}">Add recipe</a> (collection of food) </p>
+<p class="my-3">
+  <a href="{% url 'tracker:add_food' %}">Add food</a> -
+  <a href="{% url 'tracker:add_recipe' %}">Add recipe</a> (collection of food)
+</p>
 
 {% endblock %}

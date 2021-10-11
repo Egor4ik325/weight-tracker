@@ -8,7 +8,7 @@ Edit recipe
 {% block content %}
 
 
-<form action="{% url 'tracker:edit_recipe' food_id %}" method="POST">
+<form action="{% url 'tracker:edit_food' food_id %}" method="POST">
   {% csrf_token %}
 
   {{ recipe_form|crispy }}
@@ -26,7 +26,5 @@ Edit recipe
 
   <input class="btn btn-primary" type="submit" value="Save changes"> <br>
 </form>
-
-{% comment %} <p><a href="{% url 'tracker:add_recipe_food' recipe_id %}">Add food</a> to the recipe.</p> {% endcomment %}
 
 {% endblock %}

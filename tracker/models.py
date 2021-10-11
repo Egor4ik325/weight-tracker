@@ -37,7 +37,14 @@ class Recipe(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
 
+    def is_food_alias(self):
+        """Determine whether recipe is food/recipe alias."""
+        return self.belong_recipe.count() == 1
+
     def __str__(self):
+        if self.is_food_alias():
+            return str(self.belong_recipe.first().have_etable)
+
         return self.name
 
     @property
@@ -60,28 +67,25 @@ class Product(models.Model):
     have_recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True, blank=True, related_name='have_recipe') # parent_recipes
     weight = models.FloatField(default=100)
 
+    @property
+    def have_etable(self):
+        """Return Food or Recipe object that product is pointing to."""
+        if self.have_food is not None:
+            return self.have_food
+        
+        if self.have_recipe is not None:
+            return self.have_recipe
+
+        # Shouldn't happen
+        raise
+
     def __str__(self):
-        if self.have_food is None:
-            if self.have_recipe is None:
-                # shouldn't be but could
-                return None
-            else:
-                return f"{self.recipe} - {self.have_recipe}"
-        else:
-            return f"{self.recipe} - {self.have_food}"
+        return f"{self.recipe} - {self.have_etable}"
 
     @property
     def total(self):
-        """ Total product calorie value. """
-        if self.have_food is None:
-            if self.have_recipe is None:
-                # Product object is not bound to any food/recipe object
-                # shouldn't be but could
-                return None
-            else:
-                return (self.weight * self.have_recipe.calories) / 100
-        else:
-            return (self.weight * self.have_food.calories) / 100
+        """Total product calorie value."""
+        return (self.weight * self.have_etable.calories) / 100
 
 class Record(models.Model):
     """ Represent eaten food record at some day and day section (zone). """

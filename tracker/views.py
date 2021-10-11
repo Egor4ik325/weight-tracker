@@ -12,26 +12,9 @@ from .forms import (FoodForm, InlineProductFormSet, ProductForm,
 from .models import Food, Product, Recipe, Record
 
 
-def add_product(request, recipe_pk):
-    if request.method == 'GET':
-        formset = ProductFormSet(queryset=Product.objects.none())
-        context = {'product_formset': formset, 'recipe_pk': recipe_pk}
-        return render(request, 'tracker/add_product.html', context)
-    elif request.method == 'POST':
-        formset = ProductFormSet(data=request.POST)
-        if formset.is_valid():
-            formset.save()
-            return redirect(reverse_lazy('tracker:food'))
-        else:
-            return render(request, 'tracker/add_product.html', {'product_formset': formset, 'recipe_pk':recipe_pk})
-    else:
-        pass
-
-class TestTransView(TemplateView):
-    template_name = "tracker/testtrans.html"
-
 class HomeView(TemplateView):
     template_name = "tracker/index.html"
+
 
 def food(request):
     """ Responds with the table of custom food (recipes). """
@@ -39,8 +22,6 @@ def food(request):
     context = {'recipes': recipes}
     return render(request, 'tracker/food.html', context)
 
-def testtrans(request):
-    return render(request, 'tracker/testtrans.html')
 
 def add_food(request):
     """ Responds with the form to add new food. """
@@ -63,6 +44,7 @@ def add_food(request):
             return render(request, 'tracker/add_food.html', context)
     else:
         raise Exception("Undefined HTTP request method.")
+
 
 def add_recipe(request):
     """ The add recipe page consist of a recipe name/desc form and a set of product forms. """
@@ -93,11 +75,15 @@ def add_recipe(request):
         else:
             return HttpResponseBadRequest("Invalid recipe form!")
 
+
 def edit_food(request, food_id):
     r = Recipe.objects.get(pk=food_id)
-    if len(r.belong_recipe.all()) == 1:
-        p = r.belong_recipe.all()[0]
+
+    # If recipe is food alias => update food
+    if r.is_food_alias():
+        p = r.belong_recipe.first()
         f = p.have_food
+
         # The recipe is a discrete
         if request.method == 'GET':
             form = FoodForm(instance=f)
@@ -105,7 +91,9 @@ def edit_food(request, food_id):
             return render(request, 'tracker/edit_food.html', context)
         elif request.method == 'POST':
             form = FoodForm(data=request.POST, instance=f)
+
             if form.is_valid():
+                # Save changes to the food
                 form.save()
                 return redirect('tracker:food')
             else:
@@ -113,12 +101,14 @@ def edit_food(request, food_id):
                 return render(request, 'tracker/edit_food.html', context)
         else:
             raise Exception("Undefined HTTP request method.")
-    else:
-        # The recipe is complex
-        return edit_recipe(request, food_id)
+
+    # Update food as recipe
+    return edit_recipe(request, food_id)
+
 
 def edit_recipe(request, food_id):
     """Patch given recipe with the given request POST data."""
+
     # Handle changes
     if request.method == "POST":
         recipe = get_object_or_404(Recipe, pk=food_id)
@@ -145,6 +135,7 @@ def edit_recipe(request, food_id):
     }
     return render(request, 'tracker/edit_recipe.html', context)
 
+
 def track(request, date = None):
     # Redirect to the same URL with current date
     if date is None:
@@ -167,6 +158,7 @@ def track(request, date = None):
                'track_date': date}
     return render(request, 'tracker/track.html', context)
 
+
 def add_record(request, section):
     if request.method == 'GET':
         form = RecordForm()
@@ -184,9 +176,3 @@ def add_record(request, section):
             return render(request, 'tracker/add_record.html', context)
     else:
         raise Exception("Undefined HTTP request method.")
-
-# def view_recipe(request, recipe_pk):
-#     r = Recipe.objects.get(pk=recipe_pk)
-#     prods = r.belong_recipe.all()
-#     context = {'products': prods, 'recipe_pk': recipe_pk}
-#     return render(request, 'tracker/view_recipe.html', context)
