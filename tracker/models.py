@@ -3,6 +3,8 @@ from django.db import models
 # context string internationalization support
 from django.utils.translation import ugettext_lazy as _
 
+from .managers import RecipeManager
+
 # Relations:
 # ForeignKey - M-to-1
 # 
@@ -36,6 +38,7 @@ class Recipe(models.Model):
     Can consist of one or multiple products. """
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
+    objects = RecipeManager()
 
     def is_food_alias(self):
         """Determine whether recipe is food/recipe alias."""

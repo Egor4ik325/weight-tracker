@@ -1,4 +1,3 @@
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import LiveServerTestCase
 from django.shortcuts import reverse
 from selenium import webdriver
@@ -41,9 +40,7 @@ class FoodTests(LiveServerTestCase):
         self.assertEqual(Product.objects.count(), 1)
     
     def test_list_food(self):
-        f1 = Food.objects.create(name="Apple", calories=72)
-        r1 = Recipe.objects.create(name="Apple")
-        p1 = Product.objects.create(weight=100, recipe=r1, have_food=f1)
+        r1 = Recipe.objects.create_food(name="Apple", calories=72)
         
         self.driver.get(self.live_server_url + reverse('tracker:food'))
         table_rows = self.driver.find_elements_by_css_selector('tr')
@@ -51,9 +48,7 @@ class FoodTests(LiveServerTestCase):
         self.assertEqual(len(table_rows) - 1, Recipe.objects.count())
 
     def test_edit_food(self):
-        f1 = Food.objects.create(name="Apple", calories=72)
-        r1 = Recipe.objects.create(name="Apple")
-        p1 = Product.objects.create(weight=100, recipe=r1, have_food=f1)
+        r1 = Recipe.objects.create_food(name="Apple", calories=72)
 
         self.driver.get(self.live_server_url + reverse('tracker:edit_food', args=[f1.pk]))
         name_field = self.driver.find_element_by_name("name")

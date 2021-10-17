@@ -36,8 +36,7 @@ def add_food(request):
             # we need to create a basic product and recipe objects together
             # with food object so that it can choose them.
             f = form.save()
-            r = Recipe.objects.create(name=f.name)
-            p = Product.objects.create(have_food=f, recipe=r)
+            r = Recipe.objects.create_food(name=f.name, food=f)
             return redirect('tracker:food')
         else:
             context = {'form': form}
