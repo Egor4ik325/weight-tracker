@@ -43,10 +43,14 @@ class Recipe(models.Model):
     def is_food_alias(self):
         """Determine whether recipe is food/recipe alias."""
         return self.belong_recipe.count() == 1
+    
+    @property
+    def food_alias(self):
+        return self.belong_recipe.first().have_etable
 
     def __str__(self):
         if self.is_food_alias():
-            return str(self.belong_recipe.first().have_etable)
+            return str(self.food_alias)
 
         return self.name
 

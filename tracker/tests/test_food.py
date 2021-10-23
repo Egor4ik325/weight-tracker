@@ -50,7 +50,7 @@ class FoodTests(LiveServerTestCase):
     def test_edit_food(self):
         r1 = Recipe.objects.create_food(name="Apple", calories=72)
 
-        self.driver.get(self.live_server_url + reverse('tracker:edit_food', args=[f1.pk]))
+        self.driver.get(self.live_server_url + reverse('tracker:edit_food', args=[r1.food_alias.pk]))
         name_field = self.driver.find_element_by_name("name")
         calories_field = self.driver.find_element_by_name("calories")
         submit_button = self.driver.find_element_by_name("submit")

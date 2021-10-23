@@ -1,6 +1,6 @@
 # Weight/food traker/webapp
 
-> This project is still in development!
+Create food and recipes. Make records!
 
 ![Track page screenshot](screenshot.png)
 ![Database schema screenshot](schema.png)
@@ -10,6 +10,9 @@
 - [x] Clean up code + style app & forms
 - [x] Fix formsets create/update
 - [ ] Validate product model
+- [x] Food custom manager
+- [ ] Template tests
+- [ ] Calories math tests
 
 
 ## Data model
@@ -23,7 +26,7 @@ Models:
 
 ## API
 
-- create, list, update, delete food
+- create, list, update, delete food (`/food/`)
 
 - create, list, update, delete records (`/track/`)
 
