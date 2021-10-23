@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 # context string internationalization support
 from django.utils.translation import ugettext_lazy as _
@@ -43,7 +44,7 @@ class Recipe(models.Model):
     def is_food_alias(self):
         """Determine whether recipe is food/recipe alias."""
         return self.belong_recipe.count() == 1
-    
+
     @property
     def food_alias(self):
         return self.belong_recipe.first().have_etable
@@ -64,6 +65,7 @@ class Recipe(models.Model):
         else:
             return (product_totals / product_weights) * 100
 
+
 class Product(models.Model):
     """ Some real food (have weight) that is bind to simple/complex
     (from one or multiple products) recipe. """
@@ -74,6 +76,17 @@ class Product(models.Model):
     have_recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True, blank=True, related_name='have_recipe') # parent_recipes
     weight = models.FloatField(default=100)
 
+    def clean(self):
+        if (
+            self.have_food is None
+            and self.have_recipe is None
+            or self.have_food is not None
+            and self.have_recipe is not None
+        ):
+            raise ValidationError(
+                _("Food and recipe references can not be [not] null together.")
+            )
+
     @property
     def have_etable(self):
         """Return Food or Recipe object that product is pointing to."""
@@ -82,9 +95,6 @@ class Product(models.Model):
         
         if self.have_recipe is not None:
             return self.have_recipe
-
-        # Shouldn't happen
-        raise
 
     def __str__(self):
         return f"{self.recipe} - {self.have_etable}"
