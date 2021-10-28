@@ -9,10 +9,11 @@ Create food and recipes. Make records!
 
 - [x] Clean up code + style app & forms
 - [x] Fix formsets create/update
-- [ ] Validate product model
+- [x] Validate product model
 - [x] Food custom manager
-- [ ] Template tests
-- [ ] Calories math tests
+- [x] Recipe tests
+- [ ] Record tests
+- [ ] Calorie math tests
 
 
 ## Data model
